@@ -1,5 +1,9 @@
 # poorman 0.3.1
 
+## New features
+
+* `pair_join()` (and its alias `ordered_pair_join()`) pairs the rows of two `data.frame`s within a time tolerance as a one-to-one, non-crossing sequence alignment. Within each business key group, rows are ordered by time with their stable row identifier breaking ties, and paired so that the number of pairs is maximised first and the total absolute time difference is minimised. Physically duplicated rows are not deduplicated by value, and rows with a missing business key or time can never match. The result contains the pairs (with all original columns plus signed time and value differences), the unpaired rows of each side, and a per-group summary of the numbers of pairs and unpaired rows and the total time and value differences; groups without pairs and empty inputs keep their column types and report missing totals rather than zero.
+
 ## Improvements
 
 `across()`, `if_any()` and `if_all()` are now considerably faster on grouped data. The columns, the functions and the names of the results are found once for each expression rather than once for each group, the columns are read from the data of the group rather than from a copy of it, and the data frame results of the groups are bound column by column rather than with `rbind()`. On 100,000 rows, `summarise()` with `across()` is 2.1-3x faster with 1,000 and 10,000 groups, `mutate()` with `across()` is 2.2-2.9x faster from 10 groups and allocates 2-5x less memory with 1,000 and 10,000 groups, and `filter()` with `if_any()` is 2.3-2.7x faster. A lambda, e.g. `~ .x - mean(.x)`, is converted to a function once for each expression rather than once for each group, which makes `mutate()` and `summarise()` with lambdas in `across()` a further 1.13-1.23x faster with 1,000 and 10,000 groups.
